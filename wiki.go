@@ -2,14 +2,18 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
+	"html/template"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/go-sql-driver/mysql"
 )
 
-var db *sql.DB
+var (
+	db   *sql.DB
+	tmpl *template.Template
+)
 
 type Page struct {
 	PageID      int64
@@ -27,39 +31,56 @@ type User struct {
 	CreatedDate    string
 }
 
+// You can only pass one value for templating
+// However, that can be a value of values, all datapoints wrapped into a Struct of Structs
+type Payload struct {
+	RecentList []Page
+	ViewPage   Page
+}
+
 func main() {
 	// Create the DB connection
 	dbCXN()
 
-	// Test page load function
-	loadPage(1)
-
-	// Test create page function
-	new := createPage(Page{
-		Title:       "Lorem Ipsum ++",
-		Body:        []byte("Sed nec bibendum quam. Nulla auctor euismod sapien, at congue orci tincidunt nec. Sed a tortor pretium, ornare nisl nec, volutpat lacus. Etiam tincidunt nulla ligula, id pretium felis vulputate et. Suspendisse potenti. Nunc non metus eu felis semper pellentesque in dictum magna. Proin quis dignissim eros, vitae interdum lectus. Aenean tempor at dolor quis lacinia. Mauris aliquam massa et lacus dapibus convallis. Donec eget est libero."),
-		CreatedDate: time.Now(),
-		UpdatedDate: time.Now(),
-		AuthorID:    1,
-	})
-	log.Printf("Page ID '%v' created!", new)
-
-	// Test update page function
-	edt := editPage(Page{
-		PageID:      15,
-		Title:       "Lorem Ipsum Edited",
-		Body:        []byte("Etiam porta euismod ligula. Morbi varius, dui a finibus vestibulum, risus leo varius odio, vel volutpat elit purus ultrices neque. Vivamus libero risus, gravida vitae nulla ut, gravida suscipit tellus. Donec dapibus placerat orci, sit amet lobortis justo semper in. Nulla tincidunt diam quis viverra malesuada. Curabitur tristique enim eu semper egestas. Mauris interdum malesuada pretium. Etiam enim ligula, tristique in viverra sed, fringilla sit amet orci. Cras mauris libero, accumsan at egestas non, posuere sed felis. Fusce nec est dui. Cras sed auctor lacus. Praesent vel vehicula metus, non ultrices lectus. Duis non molestie ipsum. "),
-		UpdatedDate: time.Now(),
-	})
-	log.Printf("Page ID '%v' updated!", edt)
-
-	// Test last 10 pages
-	pages := recentPages()
-	for _, p := range pages {
-		fmt.Printf("%v, %s \n", p.PageID, p.Title)
+	//Parse all html files
+	var err error
+	tmpl, err = tmpl.ParseGlob("html/*.html")
+	if err != nil {
+		log.Println(err)
 	}
+	http.HandleFunc("/", homeHandler)
+	http.Handle("/assets/", http.FileServer(http.Dir("."))) //Serve static content, i.e. image and css
+
+	// // Test page load function
+	// loadPage(1)
+
+	// // Test create page function
+	// new := createPage(Page{
+	// 	Title:       "Lorem Ipsum ++",
+	// 	Body:        []byte("Sed nec bibendum quam. Nulla auctor euismod sapien, at congue orci tincidunt nec. Sed a tortor pretium, ornare nisl nec, volutpat lacus. Etiam tincidunt nulla ligula, id pretium felis vulputate et. Suspendisse potenti. Nunc non metus eu felis semper pellentesque in dictum magna. Proin quis dignissim eros, vitae interdum lectus. Aenean tempor at dolor quis lacinia. Mauris aliquam massa et lacus dapibus convallis. Donec eget est libero."),
+	// 	CreatedDate: time.Now(),
+	// 	UpdatedDate: time.Now(),
+	// 	AuthorID:    1,
+	// })
+	// log.Printf("Page ID '%v' created!", new)
+
+	// // Test update page function
+	// edt := editPage(Page{
+	// 	PageID:      15,
+	// 	Title:       "Lorem Ipsum Edited",
+	// 	Body:        []byte("Etiam porta euismod ligula. Morbi varius, dui a finibus vestibulum, risus leo varius odio, vel volutpat elit purus ultrices neque. Vivamus libero risus, gravida vitae nulla ut, gravida suscipit tellus. Donec dapibus placerat orci, sit amet lobortis justo semper in. Nulla tincidunt diam quis viverra malesuada. Curabitur tristique enim eu semper egestas. Mauris interdum malesuada pretium. Etiam enim ligula, tristique in viverra sed, fringilla sit amet orci. Cras mauris libero, accumsan at egestas non, posuere sed felis. Fusce nec est dui. Cras sed auctor lacus. Praesent vel vehicula metus, non ultrices lectus. Duis non molestie ipsum. "),
+	// 	UpdatedDate: time.Now(),
+	// })
+	// log.Printf("Page ID '%v' updated!", edt)
+
+	// // Test last 10 pages
+	// pages := recentPages()
+	// for _, p := range pages {
+	// 	fmt.Printf("%v, %s \n", p.PageID, p.Title)
+	// }
 	// serve http on port 8080
-	//log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Println("Application being served at http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 func dbCXN() {
@@ -86,6 +107,11 @@ func dbCXN() {
 		log.Fatal(pingErr)
 	}
 	log.Println("Database is reachable!")
+}
+
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	p := Payload{recentPages(), loadPage(1)}
+	tmpl.ExecuteTemplate(w, "index.html", p)
 }
 
 func createPage(p Page) int64 {
