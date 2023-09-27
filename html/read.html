@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="styles.css">
+        <title>goWiki - Read {{.Title}}</title>
+    </head>
+
+    <body>
+        <div class="content">
+            <h1>{{.Title}}</h1>
+        </div>
+        <div class="content">
+            <h4>Authored By: {{.AuthorID}}, Created On: {{.CreatedDate}}</h4>
+        </div>
+        <div class="content">
+            {{printf "%s" .Body}}
+        </div>
+    </body>
+</html>
