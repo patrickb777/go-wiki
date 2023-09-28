@@ -67,13 +67,15 @@ func main() {
 func dbCXN() {
 	// Database connection properties
 	cfg := mysql.Config{
-		User:                 "app",
-		Passwd:               "jVqb2aren2Gm", //Hardcoded for testing
-		Net:                  "tcp",
-		Addr:                 "172.17.0.2:3306",
-		DBName:               "wiki",
-		ParseTime:            true,
-		AllowNativePasswords: true, // Stackoverflow fix for connection issue
+		User:   "app",
+		Passwd: "jVqb2aren2Gm", //Hardcoded for testing
+		Net:    "tcp",
+		Addr:   "172.17.0.2:3306",
+		DBName: "wiki",
+		// Setting ParseTime to true allows the DATEIME types from MariaDB to be stored in Go's Time.Time data type
+		ParseTime: true,
+		// Credit to a Stackoverflow article for highlighting that AllowNativePasswords is requred for DB Authentication
+		AllowNativePasswords: true,
 	}
 
 	// Get the database handle

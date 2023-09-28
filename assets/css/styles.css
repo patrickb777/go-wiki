@@ -3,12 +3,26 @@
 
 /* Content styling */
 
-.main {
-    height: 100%;
+.search {
+    height: 140px;
     width: 1000px;
     position: fixed;
     z-index: 1; /* on top */
     top: 30px;
+    left: 225px;
+    background-color: #ffffff;
+    overflow-x: auto;
+    overflow-y: auto;
+    padding: 0px 0px 0px 0px;
+    border: 1px solid #292f36;
+}
+
+.main {
+    height: auto;
+    width: 1000px;
+    position: fixed;
+    z-index: 1; /* on top */
+    top: 175px;
     left: 225px;
     background-color: #ffffff;
     overflow-x: auto;
@@ -94,6 +108,42 @@ iframe {
 
 /* Form styling */
 
+.search-form {
+    width: 600px;
+    position: fixed;
+    z-index: 1; /* on top */
+    background-color: #ffffff;
+    overflow-x: hidden; /* disable scroll*/
+    overflow-y: hidden; /* disable scroll*/
+    padding: 20px 20px 20px 20px;
+}
+
+.search-form label {
+    font-size: 15px;
+    color: #292f36;
+    display: block;
+}
+
+ .search-form input[type=text], select {
+    width: 50%;
+    height: 50px;
+    padding: 12px 20px;
+    display: inline-block;
+    vertical-align: top;
+    border: 1px solid #292f36;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.search-form input[type=image] {
+    width: 50px;
+    height: 50px;
+    padding-top: 7px;
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: top;
+}
+
 .form {
     width: 600px;
     position: fixed;
@@ -119,7 +169,12 @@ input[type=text], select {
     box-sizing: border-box;
 }
 
-input[type=submit] {
+input[type=text]:focus {
+    outline: none !important;
+    border: 1px solid #ff6b6b;
+}
+
+.form input[type=submit] {
     width: 100%;
     background-color: #2d9f98;  
     color: white;
@@ -132,7 +187,7 @@ input[type=submit] {
     cursor: pointer;
 }
 
-input[type=submit]:hover {
+.form input[type=submit]:hover {
     background-color: #4ecdc4;
     color: #292f36;
 }

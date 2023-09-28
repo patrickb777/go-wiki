@@ -12,15 +12,25 @@
             
             <h2>Navigation</h2>
             <a href="" target="content_frame">goWiki home</a>
-            <a href="" target="content_frame">search pages</a>
-            <a href="" target="content_frame">publish page</a>
+            <a href="" target="content_frame">Search pages</a>
+            <a href="" target="content_frame">Publish new page</a>
             <h2>User area</h2>
-            <a href="login.html">login</a>
-            <a href="create_account.html" target="content_frame">create account</a>
+            <a href="login.html">Login</a>
+            <a href="create_account.html" target="content_frame">Create account</a>
             <h2>Latest articles</h2>
             {{ range .RecentList }}
             <a href="{{ .PageID }}">{{ .Title }}</a>
             {{ end }}
+        </div>
+        
+        <div class="search">
+                <div class="search-form">
+                    <form action="" method="POST">
+                        <label for="search-string">goWiki quick search:</label>
+                        <input type="text" name="search-string"></input>
+                        <input type="image" src="../assets/img/search_icon.png"></input>
+                    </form>
+                </div>
         </div>
 
         <div class="main">
