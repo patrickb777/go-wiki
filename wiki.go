@@ -66,6 +66,7 @@ func main() {
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/read/", readHandler)
 	http.HandleFunc("/edit/", editHandler)
+	http.HandleFunc("/save/", saveHandler)
 
 	// Output some basic log information to console
 	log.Println("Application being served at http://localhost:8080")
@@ -130,6 +131,21 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "edit.html", p)
 }
 
+func saveHandler(w http.ResponseWriter, r *http.Request) {
+	// This handler allows users to save a wiki page after editing it
+	pID, err := strconv.ParseInt(r.URL.Path[len("/save/"):], 10, 64) // [len("/save/"):] slices `save` from the URL path
+	if err != nil {
+		log.Println(err)
+	}
+	p := loadPage(pID)
+	p.Title = r.FormValue("title")
+	p.Body = []byte(r.FormValue("body"))
+	save := editPage(p)
+	log.Println(save)
+
+	http.Redirect(w, r, "/view/"+string(pID), http.StatusFound)
+}
+
 func createPage(p Page) int64 {
 	result, err := db.Exec("INSERT INTO pages (title, body, createdDate, updatedDate, userID) VALUES (?, ?, ?, ?, ?)", p.Title, p.Body, p.CreatedDate, p.UpdatedDate, p.UserID)
 	if err != nil {
@@ -155,7 +171,8 @@ func loadPage(id int64) Page {
 }
 
 func editPage(p Page) sql.Result {
-	result, err := db.Exec("UPDATE pages SET title = ?, body = ?, updatedDate = ? WHERE pageID = ?;", p.Title, p.Body, p.UpdatedDate, p.PageID)
+	query := "UPDATE pages SET title = ?, body = ?, updatedDate = ?, updatedBy = ? WHERE pageID = ?;"
+	result, err := db.Exec(query, p.Title, p.Body, time.Now(), randomUser(), p.PageID)
 	if err != nil {
 		log.Println(err)
 	}
