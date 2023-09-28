@@ -61,9 +61,10 @@ func main() {
 		log.Println(err)
 	}
 
-	// Handle root http requests
+	// Handle http requests
 	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/read/", readHandler)
+	http.HandleFunc("/edit/", editHandler)
 
 	// Output some basic log information to console
 	log.Println("Application being served at http://localhost:8080")
@@ -103,8 +104,8 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	// This handler handles any requests for root `\`
 	p := Payload{recentPages(), loadPage(1)}
 	tmpl.ExecuteTemplate(w, "index.html", p)
-	usr := randomUser()
-	log.Printf("User `%v` created", usr)
+	// usr := randomUser()
+	// log.Printf("User `%v` created", usr)
 }
 
 func readHandler(w http.ResponseWriter, r *http.Request) {
@@ -116,6 +117,16 @@ func readHandler(w http.ResponseWriter, r *http.Request) {
 		p := Payload{recentPages(), loadPage(pID)}
 		tmpl.ExecuteTemplate(w, "read.html", p)
 	}
+}
+
+func editHandler(w http.ResponseWriter, r *http.Request) {
+	// This handler allows users to edit a wiki page
+	pID, err := strconv.ParseInt(r.URL.Path[len("/edit/"):], 10, 64) // [len("/edit/"):] slices `read` from the URL path
+	if err != nil {
+		log.Println(err)
+	}
+	p := Payload{recentPages(), loadPage(pID)}
+	tmpl.ExecuteTemplate(w, "edit.html", p)
 }
 
 func createPage(p Page) int64 {
