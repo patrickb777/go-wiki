@@ -6,13 +6,13 @@ In the spirit of cross learning the application utilises a microservices approac
 
 ### DB Container instructions
 
-Build the image
+Build the image:
 ```docker build ./database -f Dockerfile --tag=wiki-db```
 
-Run the container
+Run the container:
 ```docker run -d -p 3306:3306 --name=wiki-db wiki-db```
 
-Note, assumes the DB runs on 172.17.0.2.  If other containers the IP Address is the `DBCXN()`` function needs to be updated.
+Note, the code currently assumes the DB is running on the Docker bridge network and is assigned the 172.17.0.2 IP.  If other containers are already running on the host the IP Address is the `DBCXN()`` function will need to be updated with the correct one for the DB container.
 
 ### Useful reosurces
 
