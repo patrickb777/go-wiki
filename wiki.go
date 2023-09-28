@@ -103,11 +103,10 @@ func dbCXN() {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	// This handler handles any requests for root `\`
+	// This handler handles any requests for root `\` and serves index.html
 	p := Payload{recentPages(), loadPage(1)}
 	tmpl.ExecuteTemplate(w, "index.html", p)
-	// usr := randomUser()
-	// log.Printf("User `%v` created", usr)
+	log.Printf("Index page served.\n")
 }
 
 func readHandler(w http.ResponseWriter, r *http.Request) {
@@ -118,6 +117,7 @@ func readHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		p := Payload{recentPages(), loadPage(pID)}
 		tmpl.ExecuteTemplate(w, "read.html", p)
+		log.Printf("Page ID=%v served.\n", p.ViewPage.PageID)
 	}
 }
 
@@ -129,6 +129,7 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	p := Payload{recentPages(), loadPage(pID)}
 	tmpl.ExecuteTemplate(w, "edit.html", p)
+	log.Printf("Edit template for page ID=%v served.\n", p.ViewPage.PageID)
 }
 
 func saveHandler(w http.ResponseWriter, r *http.Request) {
@@ -143,7 +144,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request) {
 	save := editPage(p)
 	log.Println(save)
 
-	http.Redirect(w, r, "/view/"+string(pID), http.StatusFound)
+	http.Redirect(w, r, "/read/"+strconv.FormatInt(pID, 10), http.StatusFound) //conver Page ID (In64 in decimal format) to string
 }
 
 func createPage(p Page) int64 {
@@ -155,6 +156,7 @@ func createPage(p Page) int64 {
 	if err != nil {
 		log.Println(err)
 	}
+	log.Printf("New DB record created for page ID=%v.\n", id)
 
 	return id
 }
@@ -164,18 +166,23 @@ func loadPage(id int64) Page {
 	query := "SELECT p.pageID, p.title, p.body, p.createdDate, p.updatedDate, p.userID, p.updatedBy, u.realName from pages p INNER JOIN user u on p.userID = u.userID WHERE p.pageID = ?;"
 	row := db.QueryRow(query, id)
 	if err := row.Scan(&p.PageID, &p.Title, &p.Body, &p.CreatedDate, &p.UpdatedDate, &p.UserID, &p.UpdatedBy, &p.AuthorName); err != nil {
-		log.Printf("Scan error: %v", err)
+		log.Printf("Database read error: %s", err)
+	} else {
+		log.Printf("DB record for page ID=%v retrieved.\n", id)
 	}
 
 	return p
 }
 
 func editPage(p Page) sql.Result {
+	userID := randomUser()
 	query := "UPDATE pages SET title = ?, body = ?, updatedDate = ?, updatedBy = ? WHERE pageID = ?;"
-	result, err := db.Exec(query, p.Title, p.Body, time.Now(), randomUser(), p.PageID)
+	result, err := db.Exec(query, p.Title, p.Body, time.Now(), userID, p.PageID)
 	if err != nil {
 		log.Println(err)
+		return nil
 	}
+	log.Printf("DB record for page ID=%v updated by user=%v.\n", p.PageID, userID)
 
 	return result
 }
@@ -194,8 +201,10 @@ func recentPages() []Page {
 		var p Page
 		if err := rows.Scan(&p.PageID, &p.Title, &p.Body, &p.CreatedDate, &p.UpdatedDate, &p.UserID, &p.UpdatedBy, &p.AuthorName); err != nil {
 			log.Println(err)
+			return nil
 		}
 		pages = append(pages, p)
+		log.Printf("Recent page list retrieved\n")
 	}
 
 	return pages
@@ -223,11 +232,6 @@ func randomUser() int64 {
 	}
 
 	return userID
-}
-
-func recentUsers() {
-	// Returns the 10 most recent page IDs & Titles
-
 }
 
 func addUser() {
