@@ -6,10 +6,14 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	// Import the database driver that's used for MariaDB
 	"github.com/go-sql-driver/mysql"
+
+	// Random username module
+	"github.com/lucasepe/codename"
 )
 
 // Defining global variables in this block.  The GO DB tutorial doesn't recommend declaring the DB as global.
@@ -99,6 +103,8 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	// This handler handles any requests for root `\`
 	p := Payload{recentPages(), loadPage(1)}
 	tmpl.ExecuteTemplate(w, "index.html", p)
+	usr := randomUser()
+	log.Printf("User `%v` created", usr)
 }
 
 func readHandler(w http.ResponseWriter, r *http.Request) {
@@ -166,6 +172,30 @@ func recentPages() []Page {
 	}
 
 	return pages
+}
+
+func randomUser() int64 {
+	// Creates a random user
+	rng, err := codename.DefaultRNG()
+	if err != nil {
+		log.Println(err)
+	}
+	uName := codename.Generate(rng, 0)
+	s := strings.Split(uName, "-")
+	rName := s[0] + " " + s[len(s)-1]
+
+	// Add user to database
+	query := "INSERT INTO user (realName, userName, createdDate) VALUES (?, ?, ?);"
+	result, err := db.Exec(query, rName, uName, time.Now())
+	if err != nil {
+		log.Println(err)
+	}
+	userID, err := result.LastInsertId()
+	if err != nil {
+		log.Println(err)
+	}
+
+	return userID
 }
 
 func recentUsers() {
