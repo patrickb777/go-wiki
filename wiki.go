@@ -31,6 +31,7 @@ type Page struct {
 	UpdatedDate time.Time
 	UserID      int64
 	AuthorName  string
+	UpdatedBy   int64
 }
 
 type User struct {
@@ -144,13 +145,11 @@ func createPage(p Page) int64 {
 
 func loadPage(id int64) Page {
 	var p Page
-	query := "SELECT p.*, u.realName from pages p INNER JOIN user u on p.userID = u.userID where p.pageID = ?;"
-
+	query := "SELECT p.pageID, p.title, p.body, p.createdDate, p.updatedDate, p.userID, p.updatedBy, u.realName from pages p INNER JOIN user u on p.userID = u.userID WHERE p.pageID = ?;"
 	row := db.QueryRow(query, id)
-	if err := row.Scan(&p.PageID, &p.Title, &p.Body, &p.CreatedDate, &p.UpdatedDate, &p.UserID, &p.AuthorName); err != nil {
-		log.Println(err)
+	if err := row.Scan(&p.PageID, &p.Title, &p.Body, &p.CreatedDate, &p.UpdatedDate, &p.UserID, &p.UpdatedBy, &p.AuthorName); err != nil {
+		log.Printf("Scan error: %v", err)
 	}
-	log.Printf("Article '%s' loaded! \n", p.Title)
 
 	return p
 }
@@ -168,7 +167,7 @@ func recentPages() []Page {
 	var pages []Page
 
 	// Get the 10 most recent wiki pages
-	rows, err := db.Query("SELECT * FROM pages ORDER BY createdDate DESC LIMIT 10;")
+	rows, err := db.Query("SELECT p.pageID, p.title, p.body, p.createdDate, p.updatedDate, p.userID, p.updatedBy, u.realName FROM pages p INNER JOIN user u on p.userID = u.userID ORDER BY createdDate DESC LIMIT 10;")
 	if err != nil {
 		log.Println(err)
 	}
@@ -176,7 +175,7 @@ func recentPages() []Page {
 	// Populate the Page struct with query results
 	for rows.Next() {
 		var p Page
-		if err := rows.Scan(&p.PageID, &p.Title, &p.Body, &p.CreatedDate, &p.UpdatedDate, &p.UserID); err != nil {
+		if err := rows.Scan(&p.PageID, &p.Title, &p.Body, &p.CreatedDate, &p.UpdatedDate, &p.UserID, &p.UpdatedBy, &p.AuthorName); err != nil {
 			log.Println(err)
 		}
 		pages = append(pages, p)
