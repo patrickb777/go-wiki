@@ -11,7 +11,9 @@
             <p>An exploration into building web applications with GoLang.</p>
             
             <h2>Navigation</h2>
-            <a href="read.html" target="content_frame">home</a>
+            <a href="" target="content_frame">goWiki home</a>
+            <a href="" target="content_frame">search pages</a>
+            <a href="" target="content_frame">publish page</a>
             <h2>User area</h2>
             <a href="login.html">login</a>
             <a href="create_account.html" target="content_frame">create account</a>
@@ -26,7 +28,7 @@
                 <h1>{{.ViewPage.Title}}</h1>
             </div>
             <div class="content">
-                <h4>Authored By: {{.ViewPage.AuthorID}}, Published On: {{.ViewPage.CreatedDate}}</h4>
+                <h4>Page Reference: {{ .ViewPage.PageID }} | Authored By: {{.ViewPage.AuthorName}} | Published On: {{.ViewPage.CreatedDate}}</h4>
             </div>
             <div class="content">
                 {{printf "%s" .ViewPage.Body}}
