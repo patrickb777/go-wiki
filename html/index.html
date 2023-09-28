@@ -2,6 +2,8 @@
 <html>
     <head>
         <link rel="stylesheet" href="../assets/css/styles.css">
+         <script type="module" src="https://md-block.verou.me/md-block.js"></script>
+ 
         <title>goWiki</title>
     </head>
 
@@ -36,12 +38,8 @@
         <div class="main">
             <div class="content">
                 <h1>{{.ViewPage.Title}}</h1>
-            </div>
-            <div class="content">
                 <h4>Page Reference: {{ .ViewPage.PageID }} | Authored By: {{.ViewPage.AuthorName}} | Published On: {{.ViewPage.CreatedDate}}</h4>
-            </div>
-            <div class="content">
-                {{printf "%s" .ViewPage.Body}}
+                <div class="body">{{ printf "%s" .ViewPage.Body }}</div> 
             </div>
         </div>
     </body>

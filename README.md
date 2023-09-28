@@ -17,4 +17,5 @@ Note, the code currently assumes the DB is running on the Docker bridge network 
 ## Useful Resources
 
 * Go Play Ground: https://go.dev/play/
+* Rendering Markdown: https://pkg.go.dev/github.com/gomarkdown/markdown#section-readme
 * https://connelblaze.medium.com/displaying-database-table-data-on-html-table-tag-92761c07e01f

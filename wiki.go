@@ -12,6 +12,8 @@ import (
 	// Import the database driver that's used for MariaDB
 	"github.com/go-sql-driver/mysql"
 
+	// Markdown to HTML module
+
 	// Random username module
 	"github.com/lucasepe/codename"
 )
@@ -26,7 +28,7 @@ var (
 type Page struct {
 	PageID      int64
 	Title       string
-	Body        []byte
+	Body        string
 	CreatedDate time.Time
 	UpdatedDate time.Time
 	UserID      int64
@@ -140,7 +142,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	p := loadPage(pID)
 	p.Title = r.FormValue("title")
-	p.Body = []byte(r.FormValue("body"))
+	p.Body = r.FormValue("body")
 	save := editPage(p)
 	log.Println(save)
 

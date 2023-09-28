@@ -26,12 +26,8 @@
         <div class="read">
             <div class="content">
                 <h1>{{.ViewPage.Title}}</h1>
-            </div>
-            <div class="content">
                 <h4>Page Reference: {{ .ViewPage.PageID }} | Authored By: {{.ViewPage.AuthorName}} | Published On: {{.ViewPage.CreatedDate}} | <a href="/edit/{{ .ViewPage.PageID }}">Edit Page</a></h4>
-            </div>
-            <div class="content">
-                {{printf "%s" .ViewPage.Body}}
+                <div class="body">{{ printf "%s" .ViewPage.Body }}</div> 
             </div>
         </div>
     </body>

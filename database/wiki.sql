@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS pages (
 INSERT INTO user
   (realName, userName, createdDate)
 VALUES
-  ('System', 'system', NOW());
+  ('Poetic Gopher', 'poetic-gopher', NOW());
 
 INSERT INTO pages
   (title, body, createdDate, updatedDate, userID, updatedBy)
