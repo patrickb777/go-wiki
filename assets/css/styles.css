@@ -10,12 +10,15 @@
     z-index: 1; /* on top */
     top: 30px;
     left: 225px;
-    background-color: #ffffff;
     overflow-x: hidden; /* disable scroll*/
     overflow-y: hidden; /* disable scroll*/
     padding: 0px 0px 0px 0px;
     border: 1px solid #292f36;
     border-radius: 4px;
+    background-image: url("/assets/img/search.png");
+    background-size: 100px;
+    background-position: left;
+    background-repeat: no-repeat;
 }
 
 .main {
@@ -152,8 +155,8 @@ label {
 .search-form {
     width: 600px;
     position: fixed;
+    margin-left: 80px;
     z-index: 1; /* on top */
-    background-color: #ffffff;
     overflow-x: hidden; /* disable scroll*/
     overflow-y: hidden; /* disable scroll*/
     padding: 20px 20px 20px 20px;
