@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	// Import the database driver that's used for MariaDB
@@ -58,6 +59,7 @@ func main() {
 
 	// Handle root http requests
 	http.HandleFunc("/", homeHandler)
+	http.HandleFunc("/read/", readHandler)
 
 	// Output some basic log information to console
 	log.Println("Application being served at http://localhost:8080")
@@ -94,8 +96,20 @@ func dbCXN() {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
+	// This handler handles any requests for root `\`
 	p := Payload{recentPages(), loadPage(1)}
 	tmpl.ExecuteTemplate(w, "index.html", p)
+}
+
+func readHandler(w http.ResponseWriter, r *http.Request) {
+	// This handler allows users to read a wiki page
+	pID, err := strconv.ParseInt(r.URL.Path[len("/read/"):], 10, 64) // [len("/read/"):] slices `read` from the URL path
+	if err != nil {
+		log.Println(err)
+	} else {
+		p := Payload{recentPages(), loadPage(pID)}
+		tmpl.ExecuteTemplate(w, "read.html", p)
+	}
 }
 
 func createPage(p Page) int64 {
