@@ -14,6 +14,16 @@ Run the container:
 
 Note, the code currently assumes the DB is running on the Docker bridge network and is assigned the ```172.17.0.2``` IP.  If other containers are already running on the host the IP Address is the ```DBCXN()``` function will need to be updated with the correct IP address for the database container.
 
+## To Do
+
+* Add last modification details, if updated > created then dispay who and when
+* Publish new page content
+* Error handling / 404 responses
+* Implement http response codes
+* Add media, 3x images?
+* Add Search funtional
+* Add users and user administration
+
 ## Useful Resources
 
 * Go Play Ground: https://go.dev/play/
